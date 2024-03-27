@@ -314,7 +314,6 @@ func (c *httpConv) ServerRequest(server string, req *http.Request) []attribute.K
 	net.sock.peer.addr      string
 	net.sock.peer.port      int
 	user_agent.original     string
-	http.client_ip          string
 	net.protocol.name       string Note: not set if the value is "http".
 	net.protocol.version    string
 	http.target             string Note: doesn't include the query parameter.
@@ -358,11 +357,6 @@ func (c *httpConv) ServerRequest(server string, req *http.Request) []attribute.K
 		n++
 	}
 
-	clientIP := serverClientIP(req.Header.Get("X-Forwarded-For"))
-	if clientIP != "" {
-		n++
-	}
-
 	var target string
 	if req.URL != nil {
 		target = req.URL.Path
@@ -399,10 +393,6 @@ func (c *httpConv) ServerRequest(server string, req *http.Request) []attribute.K
 
 	if useragent != "" {
 		attrs = append(attrs, c.UserAgentOriginalKey.String(useragent))
-	}
-
-	if clientIP != "" {
-		attrs = append(attrs, c.HTTPClientIPKey.String(clientIP))
 	}
 
 	if target != "" {
